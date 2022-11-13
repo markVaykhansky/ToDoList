@@ -7,12 +7,7 @@ class ToDoListServer {
       this.userToCredentials = {};
       this.userToTasks = {
         'Mark': [
-          'Buy Milk',
-          'Buy groceries',
-          'Go to the gym',
-          'Work',
-          'Teach',
-          'Study'
+          { title: 'Buy Milk', 'id': '1' },
         ],
         'Mark2': ['Item1']
       }

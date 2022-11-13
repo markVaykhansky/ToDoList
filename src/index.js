@@ -11,27 +11,10 @@ import {
     RouterProvider,
     Route,
   } from "react-router-dom";
-// import { Authentication } from './authentication';
-
-// const router = createBrowserRouter([
-//     {
-//       path: "/",
-//       element: <App />,
-//       errorElement: <ErrorPage />
-//     },
-//     {
-//         path: "/login",
-//         element: <Authentication />
-//     }
-//   ]);
-  
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-    <App></App>
-    // <RouterProvider router={router} />
+    <App />
 );
-
-//ReactDOM.createRoot(document.getElementById('root')).render(<App />);
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

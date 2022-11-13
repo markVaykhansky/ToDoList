@@ -1,93 +1,30 @@
 import './App.css';
 import { useEffect, useState } from 'react';
 import { toDoListServer } from './toDoListServer';
-import { Route } from 'react-router-dom';
 import { Authenticator } from './Authenticator';
+import { TaskList, TaskPage } from './taskList';
+import { createBrowserRouter, RouterProvider, Link } from 'react-router-dom';
+import { UserNameProvider } from './useNameProvider';
 
-// 6/11/22
-// 1. Create a username inside the App component
-// 2. Authenticate the user through the App component
-//  2.1. Once authenticated let the ToDo list component know 
-//  2.2. Print a "sync" logo that means that the to-do list is syncing
-// 3. After an item is added sync it to the server through a callback
-// -------------------------------------
-// 13/11/22
-// Go other the code we already wrote
-// Create a user login
-// Create a route  
-//    -- All todo items
-//    -- SingleToDoItemPage
-//    -- Settings
-
-function ToDoListItem (props) {
-  const { itemText, onDeleteItemHandler } = props;
-  const [isItemChecked, setIsItemChecked] = useState(false);
-
-  const onCheckboxChanged = () => {
-    setIsItemChecked(!isItemChecked);
-  }
-  const checkboxStyle = isItemChecked ? { textDecoration: 'line-through' } : {}
-
-  return (
-  <div style={{ display: 'flex', flexDirection: 'row' }}>
-    <div style={checkboxStyle}>{itemText}</div>
-    <input type="checkbox" onChange={onCheckboxChanged}></input>
-    <button onClick={() => onDeleteItemHandler(itemText)}>Delete</button>
-  </div>
-  );
-}
-
-function TaskList(props) {
-  const { inSync, user, onItemAddedCallback, preExistingUserTasks } = props;
-
-  const [tasks, setTasks] = useState([]);
-  const [input, setInput] = useState('');
-
-  const onAddItemClicked = () => {
-    onItemAddedCallback(input);
-    setTasks([...tasks, input]);
-    setInput('');
-  }
-
-  useEffect(() => { 
-    if(!preExistingUserTasks) return; 
-
-    setTasks([...tasks, ...preExistingUserTasks]);
-  }, [preExistingUserTasks]);
-
-  const onInputChangeMethod = (eventArgs) => {
-    const currentInput = eventArgs.target.value;
-    setInput(currentInput);
-  }
-
-  const onDeleteItem = (itemIndex) => {
-    const toDoItemsDuplicate = [...tasks]
-    toDoItemsDuplicate.splice(itemIndex, 1);
-    setTasks(toDoItemsDuplicate);
-  }
-
-  const isEmptyToDoList = tasks.length === 0;
+const router = createBrowserRouter([
+  {
+      path: "/",
+      element: <Authenticator />
+  },  
+  {
+      path: "/taskList",
+      element: <TaskListContainer />,
+      // errorElement: <ErrorPage />
+    },
+    {
+      path: "/taskList/:id",
+      element: <TaskPage />
+    }
+  ]);
   
 
-  return (<div>
-    <h1>{user}'s ToDo List</h1>
-    <h2 style={{color: inSync ? "green" : "orange"}}>{inSync ? "Connected" : "Is syncing..."}</h2>
-    <input id="my-input" onChange={onInputChangeMethod} value={input} />
-    <button onClick={onAddItemClicked}>Add Task</button>
-    <div id="Items">
-      {isEmptyToDoList ? <div>No Tasks</div> :
-       tasks.map((item, index) => (
-        <ToDoListItem 
-          key={index} 
-          itemText={item} 
-          onDeleteItemHandler={onDeleteItem} />
-      ))}
-    </div>
-  </div>)
-}
-
-function App() {
-  const [userName, setUserName] = useState();
+function TaskListContainer() {
+  const userName = UserNameProvider.getUserName();
   const [userCredentials, setUserCredentials] = useState(undefined);  
   const [preExistingUserTasks, setPreExistingUserTasks] = useState([]);
 
@@ -129,21 +66,55 @@ function App() {
 
   const onUserLoggedIn = (userName) => {
     console.log(userName + " just logged in!");
-    setUserName(userName);
+    //setUserName(userName);
   }
+
+  const logOut = () => {
+    UserNameProvider.setUserName(undefined);
+    setUserCredentials(undefined);
+  };
 
   const inSync = !!userCredentials;
 
+  if(!userName) {
+    return (<div>You can not access todo list without logging in</div>)
+  }
+
   return (
     <div style={{ backgroundColor: '#0190FE', height: '100vh' }} className="App">
-      {!!userName ? (<TaskList 
+      <>
+        <Link to="/">
+          <button onClick={logOut} style={{marginTop: '10px' }}>LogOut</button>
+        </Link>
+        <TaskList 
         user={userName}
         inSync={inSync}
         onItemAddedCallback={addTaskToServer} 
         preExistingUserTasks={preExistingUserTasks}
-        />) : <Authenticator onUserLogIn={onUserLoggedIn} />}
-    </div>)
+        />
+      </>
+    </div>);
+}
+
+
+function App() {
+  return (<RouterProvider router={router} />);
 }
 
 export default App;
+
+// 6/11/22
+// 1. Create a username inside the App component
+// 2. Authenticate the user through the App component
+//  2.1. Once authenticated let the ToDo list component know 
+//  2.2. Print a "sync" logo that means that the to-do list is syncing
+// 3. After an item is added sync it to the server through a callback
+// -------------------------------------
+// 13/11/22
+// Go other the code we already wrote
+// Create a user login
+// Create a route  
+//    -- All todo items
+//    -- SingleToDoItemPage
+//    -- Settings
 

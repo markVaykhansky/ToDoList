@@ -9,7 +9,9 @@ class ToDoListServer {
         'Mark': [
           { title: 'Buy Milk', 'id': '1' },
         ],
-        'Mark2': ['Item1']
+        'Mark2': [
+          { title: 'Fix car', 'id': '2' }
+        ]
       }
     }
   

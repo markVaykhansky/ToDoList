@@ -1,10 +1,10 @@
 import { useState } from "react"
 import { UserNameProvider } from './useNameProvider';
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { setItem, getItem } from 'localforage';
+
 
 export function Authenticator() {
-    const { someParam2 } = useParams();
-
     const [inputValue, setInputValue] = useState('');
     
     const onInputChangeMethod = (eventArgs) => {

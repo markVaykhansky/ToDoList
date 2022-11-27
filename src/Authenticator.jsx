@@ -1,3 +1,4 @@
+import { useReducer } from "react";
 import { useState, useContext } from "react"
 import { Navigate } from 'react-router-dom';
 import { UserNameContext } from "./userNameContext";
@@ -11,16 +12,54 @@ const userNameToPassword = {
     'Mark2': '6789'
 };
 
+function reducer(state, action) {
+    switch(action.type) {
+        case 'user-input': 
+            return {
+                ...state,
+                [action.field]: action.value
+            }
+        case 'password-input': 
+            return {
+                ...state,
+                [action.field]: action.value
+            }
+        case 'log-in':
+            return {
+                ...state,
+                isLoggingIn: true
+            }
+        case 'error':
+            return {
+                ...state,
+                [action.field]: action.value
+            }
+        case 'success':
+            return {
+                ...state,
+                isLoggingIn: false,
+                isLoggedInIn: true
+            }
+    }
+}
+
 export function Authenticator({ redirectAddress }) {
     const {
         userName,
         onUserNameChanged
       } = useContext(UserNameContext);    
     
-    const [userNameInputValue, setUserNameInputValue] = useState('');
-    const [passwordInputValue, setPasswordInputValue] = useState('');
-    const [errorString, setErrorString] = useState();
-    const [isLoggingIn, setIsLoggingIn] = useState(false);
+    const [state, dispatch] = useReducer(reducer, {
+        userNameInputValue: '',
+        passwordInputValue: '',
+        isLoggingIn: false
+    });
+    
+    const { userNameInputValue,
+        setPasswordInputValue,
+        errorString,
+        isLoggedInIn
+    } = state; 
 
     const onLogInButtonClicked = async () => {
         setIsLoggingIn(true);
@@ -68,7 +107,7 @@ export function Authenticator({ redirectAddress }) {
             <div>Password:</div>
             <input value={passwordInputValue} onChange={eventArgs => setPasswordInputValue(eventArgs.target.value)} />
         </div>
-        <button disabled={isLoggingIn} onClick={onLogInButtonClicked}>
+        <button disabled={isLoggingIn} onClick={dispatch('log-in')}>
             {isLoggingIn ? 'Logging in...' : 'Log In'}
         </button>
     </div>)

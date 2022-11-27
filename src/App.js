@@ -1,10 +1,10 @@
 import './App.css';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { toDoListServer } from './toDoListServer';
 import { Authenticator } from './Authenticator';
 import { TaskList, TaskPage } from './taskList';
 import { createBrowserRouter, RouterProvider, Link, Navigate } from 'react-router-dom';
-import { UserNameProvider } from './useNameProvider';
+import { UserNameContext } from './userNameContext';
 
 const NavigateToAuthenticator = () => <Navigate to={'/authenticate'} />;
 
@@ -15,7 +15,7 @@ const router = createBrowserRouter([
   },
   {
       path: "/authenticate",
-      element: UserNameProvider.getUserName() ? <Navigate to={'/taskList'} /> : <Authenticator />
+      element: <Authenticator redirectAddress={'/taskList'} />
   },
   {
       path: "/taskList",
@@ -29,7 +29,7 @@ const router = createBrowserRouter([
   
 
 function TaskListContainer() {
-  const [userName, setUsername] = useState(UserNameProvider.getUserName());
+  const { userName, onUserNameChanged } = useContext(UserNameContext);
   const [userCredentials, setUserCredentials] = useState(undefined);  
   const [preExistingUserTasks, setPreExistingUserTasks] = useState([]);
 
@@ -66,8 +66,7 @@ function TaskListContainer() {
   }
 
   const logOut = () => {
-    UserNameProvider.deleteUserName();
-    setUsername(undefined);
+    onUserNameChanged(undefined);
     setUserCredentials(undefined);
   };
 
@@ -93,9 +92,29 @@ function TaskListContainer() {
     </div>);
 }
 
-
 function App() {
-  return (<RouterProvider router={router} />);
+  const userNameKey = 'userName';
+  const [userName, setUserName] = useState(localStorage.getItem(userNameKey));
+
+  const onUserNameChanged = (newUserName) => {
+    setUserName(newUserName);
+
+    if(newUserName)
+      localStorage.setItem(userNameKey, newUserName);
+    else  
+      localStorage.removeItem(userNameKey);
+  }
+
+  const userNameContextValue = {
+    userName,
+    onUserNameChanged
+  }
+
+  return (
+    <UserNameContext.Provider value={userNameContextValue}>
+      <RouterProvider router={router} />
+    </UserNameContext.Provider>
+  );
 }
 
 export default App;

@@ -1,17 +1,11 @@
 import { useState } from "react"
-import { UserNameProvider } from './useNameProvider';
 import { Link, Navigate } from 'react-router-dom';
-import { setItem, getItem } from 'localforage';
 import { useContext } from "react";
 import { UserContext } from "./userContext";
 
 
 export function Authenticator({ redirectTo }) {
-    console.log("Auth");
-    const x = useContext(UserContext);
-    console.log(x);
-
-    const { user, onUserChanged } = x;
+    const { user, onUserChanged } = useContext(UserContext);
 
     const [inputValue, setInputValue] = useState('');
     

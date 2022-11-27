@@ -4,7 +4,6 @@ import { toDoListServer } from './toDoListServer';
 import { Authenticator } from './Authenticator';
 import { TaskList, TaskPage } from './taskList';
 import { createBrowserRouter, RouterProvider, Link, Navigate } from 'react-router-dom';
-import { UserNameProvider } from './useNameProvider';
 import { UserContext } from './userContext';
 
 const NavigateToAuthenticator = () => <Navigate to={'/authenticate'} />;
@@ -67,7 +66,6 @@ function TaskListContainer() {
   }
 
   const logOut = () => {
-    UserNameProvider.deleteUserName();
     onUserChanged(undefined);
     setUserCredentials(undefined);
   };
@@ -81,7 +79,7 @@ function TaskListContainer() {
   return (
     <div style={{ backgroundColor: '#0190FE', height: '100vh' }} className="App">
       <>
-        <Link to="/">
+        <Link to="/authenticate">
           <button onClick={logOut} style={{marginTop: '10px' }}>LogOut</button>
         </Link>
         <TaskList 
@@ -94,22 +92,25 @@ function TaskListContainer() {
     </div>);
 }
 
-
 function App() {
   const userKey = 'userName';
   const [user, setUser] = useState(localStorage.getItem(userKey));
 
   const onUserChanged = (newUser) => {
     if(newUser === undefined) {
-      localStorage.removeItem(userKey)
+      console.log('deleting user');
+      localStorage.removeItem(userKey);
+      setUser(undefined);
+      return;
     }
 
+    console.log('setting user to', newUser);
     localStorage.setItem(userKey, newUser);
     setUser(newUser);
   }
 
   return (
-  <UserContext.Provider value={{ user , onUserChanged }}>
+  <UserContext.Provider value={{ user: user ?? undefined , onUserChanged }}>
       <RouterProvider router={router} />
   </UserContext.Provider>);
 }
@@ -130,4 +131,8 @@ export default App;
 //    -- All todo items
 //    -- SingleToDoItemPage
 //    -- Settings
-
+// 27/11/22
+// Navigate for redirecting
+// useContext --> Move User to Context
+// Add a password to the log-in form
+// Use a reducer instead of state on the log-in form

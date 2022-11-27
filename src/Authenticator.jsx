@@ -1,10 +1,18 @@
 import { useState } from "react"
 import { UserNameProvider } from './useNameProvider';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { setItem, getItem } from 'localforage';
+import { useContext } from "react";
+import { UserContext } from "./userContext";
 
 
-export function Authenticator() {
+export function Authenticator({ redirectTo }) {
+    console.log("Auth");
+    const x = useContext(UserContext);
+    console.log(x);
+
+    const { user, onUserChanged } = x;
+
     const [inputValue, setInputValue] = useState('');
     
     const onInputChangeMethod = (eventArgs) => {
@@ -13,7 +21,11 @@ export function Authenticator() {
       }
 
     const onLogInButtonClicked = () => {
-        UserNameProvider.setUserName(inputValue);
+        onUserChanged(inputValue);
+    }
+
+    if(user) {
+        return (<Navigate to={redirectTo} />);
     }
 
     return (

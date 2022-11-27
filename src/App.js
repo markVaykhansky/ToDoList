@@ -1,12 +1,13 @@
 import './App.css';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { toDoListServer } from './toDoListServer';
 import { Authenticator } from './Authenticator';
 import { TaskList, TaskPage } from './taskList';
 import { createBrowserRouter, RouterProvider, Link, Navigate } from 'react-router-dom';
 import { UserNameProvider } from './useNameProvider';
+import { UserContext } from './userContext';
 
-const NavigateToAuthenticator = () => <Navigate to={'/authenticat'} />;
+const NavigateToAuthenticator = () => <Navigate to={'/authenticate'} />;
 
 const router = createBrowserRouter([
   {
@@ -14,8 +15,8 @@ const router = createBrowserRouter([
       element: <NavigateToAuthenticator />
   },
   {
-      path: "/authenticator",
-      element: UserNameProvider.getUserName() ? <Navigate to={'/taskList'} /> : <Authenticator />
+      path: "/authenticate",
+      element: <Authenticator redirectTo={'/taskList'} />
   },
   {
       path: "/taskList",
@@ -28,22 +29,21 @@ const router = createBrowserRouter([
     }
   ]);
   
-
 function TaskListContainer() {
-  const [userName, setUsername] = useState(UserNameProvider.getUserName());
+  const { user, onUserChanged } = useContext(UserContext);
   const [userCredentials, setUserCredentials] = useState(undefined);  
   const [preExistingUserTasks, setPreExistingUserTasks] = useState([]);
 
   useEffect(() => { 
-    if(!userName || !!userCredentials) return;
+    if(!user || !!userCredentials) return;
 
     const authenticateUser = async () => {
-      const userCredentials = await toDoListServer.getUserAuthentication(userName);
-      console.log("Received a user credentials for " + userName, userCredentials);
+      const userCredentials = await toDoListServer.getUserAuthentication(user);
+      console.log("Received a user credentials for " + user, userCredentials);
       setUserCredentials(userCredentials);
     }
     authenticateUser();
-  }, [userName]);
+  }, [user]);
 
   useEffect(() => {
     if(!userCredentials) return;
@@ -61,20 +61,20 @@ function TaskListContainer() {
     if(userCredentials === undefined) 
       throw new Error("A user is not logged in but tried to add a task");
 
-    if (!taskText || !userName) return;
+    if (!taskText || !user) return;
 
     toDoListServer.addUserTask(userCredentials, taskText);
   }
 
   const logOut = () => {
     UserNameProvider.deleteUserName();
-    setUsername(undefined);
+    onUserChanged(undefined);
     setUserCredentials(undefined);
   };
 
   const inSync = !!userCredentials;
 
-  if(!userName) {
+  if(!user) {
     return (<NavigateToAuthenticator />);
   }
 
@@ -85,7 +85,7 @@ function TaskListContainer() {
           <button onClick={logOut} style={{marginTop: '10px' }}>LogOut</button>
         </Link>
         <TaskList 
-        user={userName}
+        user={user}
         inSync={inSync}
         onItemAddedCallback={addTaskToServer} 
         preExistingUserTasks={preExistingUserTasks}
@@ -96,7 +96,22 @@ function TaskListContainer() {
 
 
 function App() {
-  return (<RouterProvider router={router} />);
+  const userKey = 'userName';
+  const [user, setUser] = useState(localStorage.getItem(userKey));
+
+  const onUserChanged = (newUser) => {
+    if(newUser === undefined) {
+      localStorage.removeItem(userKey)
+    }
+
+    localStorage.setItem(userKey, newUser);
+    setUser(newUser);
+  }
+
+  return (
+  <UserContext.Provider value={{ user , onUserChanged }}>
+      <RouterProvider router={router} />
+  </UserContext.Provider>);
 }
 
 export default App;

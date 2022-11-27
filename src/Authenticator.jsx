@@ -18,7 +18,6 @@ export function Authenticator() {
 
     return (
     <div>
-        <div>{someParam2}</div>
         <span>Please Log In </span>
         <input value={inputValue} onChange={onInputChangeMethod} />
         <button onClick={onLogInButtonClicked}>

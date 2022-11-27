@@ -3,14 +3,20 @@ import { useEffect, useState } from 'react';
 import { toDoListServer } from './toDoListServer';
 import { Authenticator } from './Authenticator';
 import { TaskList, TaskPage } from './taskList';
-import { createBrowserRouter, RouterProvider, Link } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, Link, Navigate } from 'react-router-dom';
 import { UserNameProvider } from './useNameProvider';
+
+const NavigateToAuthenticator = () => <Navigate to={'/authenticat'} />;
 
 const router = createBrowserRouter([
   {
       path: "/",
-      element: <Authenticator />
-  },  
+      element: <NavigateToAuthenticator />
+  },
+  {
+      path: "/authenticator",
+      element: UserNameProvider.getUserName() ? <Navigate to={'/taskList'} /> : <Authenticator />
+  },
   {
       path: "/taskList",
       element: <TaskListContainer />,
@@ -24,7 +30,7 @@ const router = createBrowserRouter([
   
 
 function TaskListContainer() {
-  const userName = UserNameProvider.getUserName();
+  const [userName, setUsername] = useState(UserNameProvider.getUserName());
   const [userCredentials, setUserCredentials] = useState(undefined);  
   const [preExistingUserTasks, setPreExistingUserTasks] = useState([]);
 
@@ -55,29 +61,21 @@ function TaskListContainer() {
     if(userCredentials === undefined) 
       throw new Error("A user is not logged in but tried to add a task");
 
-    if (taskText === undefined)
-      return;
-
-    if (userName === undefined)
-      return;
+    if (!taskText || !userName) return;
 
     toDoListServer.addUserTask(userCredentials, taskText);
   }
 
-  const onUserLoggedIn = (userName) => {
-    console.log(userName + " just logged in!");
-    //setUserName(userName);
-  }
-
   const logOut = () => {
-    UserNameProvider.setUserName(undefined);
+    UserNameProvider.deleteUserName();
+    setUsername(undefined);
     setUserCredentials(undefined);
   };
 
   const inSync = !!userCredentials;
 
   if(!userName) {
-    return (<div>You can not access todo list without logging in</div>)
+    return (<NavigateToAuthenticator />);
   }
 
   return (

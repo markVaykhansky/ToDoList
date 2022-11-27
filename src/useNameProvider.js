@@ -1,12 +1,16 @@
 export class UserNameProvider {
-    static userName = undefined
-  
+    static useNameKey = 'userName';
+
     static setUserName(userName) {
-        UserNameProvider.userName = userName;
+        localStorage.setItem(UserNameProvider.useNameKey, userName);
+    }
+
+    static deleteUserName() {
+        localStorage.removeItem(UserNameProvider.useNameKey);
     }
   
     static getUserName() {
-        return UserNameProvider.userName;
+        return localStorage.getItem(UserNameProvider.useNameKey);
     }
   }
   

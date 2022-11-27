@@ -6,7 +6,7 @@ import { TaskList, TaskPage } from './taskList';
 import { createBrowserRouter, RouterProvider, Link, Navigate } from 'react-router-dom';
 import { UserNameProvider } from './useNameProvider';
 
-const NavigateToAuthenticator = () => <Navigate to={'/authenticat'} />;
+const NavigateToAuthenticator = () => <Navigate to={'/authenticate'} />;
 
 const router = createBrowserRouter([
   {
@@ -14,13 +14,12 @@ const router = createBrowserRouter([
       element: <NavigateToAuthenticator />
   },
   {
-      path: "/authenticator",
+      path: "/authenticate",
       element: UserNameProvider.getUserName() ? <Navigate to={'/taskList'} /> : <Authenticator />
   },
   {
       path: "/taskList",
-      element: <TaskListContainer />,
-      // errorElement: <ErrorPage />
+      element: <TaskListContainer />
     },
     {
       path: "/taskList/:id",

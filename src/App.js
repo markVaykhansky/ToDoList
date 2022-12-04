@@ -1,12 +1,12 @@
 import './App.css';
 import { useContext, useEffect, useState } from 'react';
 import { toDoListServer } from './toDoListServer';
-import { Authenticator } from './Authenticator';
+import { LogInForm } from './login';
 import { TaskList, TaskPage } from './taskList';
 import { createBrowserRouter, RouterProvider, Link, Navigate } from 'react-router-dom';
 import { UserNameContext } from './userNameContext';
 
-const NavigateToAuthenticator = () => <Navigate to={'/authenticate'} />;
+const NavigateToAuthenticator = () => <Navigate to={'/login'} />;
 
 const router = createBrowserRouter([
   {
@@ -14,8 +14,8 @@ const router = createBrowserRouter([
       element: <NavigateToAuthenticator />
   },
   {
-      path: "/authenticate",
-      element: <Authenticator redirectAddress={'/taskList'} />
+      path: "/login",
+      element: <LogInForm redirectAddress={'/taskList'} />
   },
   {
       path: "/taskList",
@@ -62,7 +62,7 @@ function TaskListContainer() {
 
     if (!taskText || !userName) return;
 
-    toDoListServer.addUserTask(userCredentials, taskText);
+    toDoListServer.addUserTask(userCredentials,  taskText);
   }
 
   const logOut = () => {
@@ -83,10 +83,10 @@ function TaskListContainer() {
           <button onClick={logOut} style={{marginTop: '10px' }}>LogOut</button>
         </Link>
         <TaskList 
-        user={userName}
-        inSync={inSync}
-        onItemAddedCallback={addTaskToServer} 
-        preExistingUserTasks={preExistingUserTasks}
+          user={userName}
+          inSync={inSync}
+          onItemAddedCallback={addTaskToServer} 
+          preExistingUserTasks={preExistingUserTasks}
         />
       </>
     </div>);

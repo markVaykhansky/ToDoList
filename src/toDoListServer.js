@@ -1,8 +1,10 @@
 import { collection, getDocs, addDoc } from 'firebase/firestore/lite';
-import { fireStoreInstance } from './firebase-init';
+import { getFirestore } from 'firebase/firestore/lite';
+import { firebaseApp } from './firebase-init';
 
 class ToDoListServer { 
     constructor() {
+      const fireStoreInstance = getFirestore(firebaseApp);
       this.tasksCollection = collection(fireStoreInstance, 'TasksCollection');
 
       this.userToCredentials = {};

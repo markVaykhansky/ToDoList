@@ -12,6 +12,7 @@
       "codebase": "default",
       "ignore": [
         "node_modules",
+        "**/.*",
         ".git",
         "firebase-debug.log",
         "firebase-debug.*.log"
@@ -20,7 +21,13 @@
   ],
   "hosting": {
     "site": "todo-list-itc-ef97b",
-    "public": "public",
+    "public": "build",
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ],
     "ignore": [
       "firebase.json",
       "**/.*",

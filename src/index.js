@@ -4,14 +4,6 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
-import { ErrorPage } from './errorPage';
-
-import {
-    createBrowserRouter,
-    RouterProvider,
-    Route,
-  } from "react-router-dom";
-
 ReactDOM.createRoot(document.getElementById('root')).render(
     <App />
 );

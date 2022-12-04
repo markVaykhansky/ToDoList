@@ -42,7 +42,7 @@ function TaskListContainer() {
       setUserCredentials(userCredentials);
     }
     authenticateUser();
-  }, [userName]);
+  }, [userName, userCredentials]);
 
   useEffect(() => {
     if(!userCredentials) return;

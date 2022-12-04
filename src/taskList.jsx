@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { v4 as uuidV4 }from 'uuid';
 
 function Task (props) {
     const { itemText, onDeleteItemHandler } = props;
@@ -26,8 +27,10 @@ export function TaskList(props) {
     const [input, setInput] = useState('');
   
     const onAddItemClicked = () => {
-      onItemAddedCallback(input);
-      setTasks([...tasks, input]);
+      const newTask = { user, title: input, id: uuidV4().toString() }
+
+      onItemAddedCallback(newTask);
+      setTasks([...tasks, newTask]);
       setInput('');
     }
   
@@ -49,7 +52,6 @@ export function TaskList(props) {
     }
   
     const isEmptyToDoList = tasks.length === 0;
-    
   
     return (<div>
       <h1>{user}'s ToDo List</h1>

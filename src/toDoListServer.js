@@ -1,9 +1,10 @@
-async function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-  
+import { collection, getDocs, addDoc } from 'firebase/firestore/lite';
+import { fireStoreInstance } from './firebase-init';
+
 class ToDoListServer { 
     constructor() {
+      this.tasksCollection = collection(fireStoreInstance, 'TasksCollection');
+
       this.userToCredentials = {};
       this.userToTasks = {
         'Mark': [
@@ -20,8 +21,6 @@ class ToDoListServer {
         throw new Error("User is undefined");
       }
 
-      sleep(2000);
-      
       function generateUserToken() {
         var result           = '';
         var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -51,26 +50,26 @@ class ToDoListServer {
       const { userName } = credentials;
   
       console.log("Adding task " + task + " to user " + userName);
-  
-      if(this.userToTasks[userName] === undefined) {
-        this.userToTasks[userName] = [];
-      }
-  
-      this.userToTasks[userName].push(task);
+      const dbObject = { id: task.id, user: credentials.userName, title: task.title }
+      console.log(dbObject);
+
+      const docRef = await  addDoc(this.tasksCollection, dbObject);
+      console.log("Created new document for task with id " + docRef.id)
     }
   
     async getUserTasks(credentials) {
       console.log("Get user tasks");
       this._validateCredentials(credentials);
   
-      return this.userToTasks[credentials.userName];
+      const tasksSnapshot = await getDocs(this.tasksCollection);
+      const tasksList = tasksSnapshot.docs.map(doc => doc.data());
+
+      return tasksList.filter(task => task.user === credentials.userName);
     }
   
     _validateCredentials(credentials) {
       const { userName, userAuth } = credentials;
    
-      sleep(2000);
-  
       if(this.userToCredentials[userName].userAuth !== userAuth) {
         throw new Error("User is not authenticated");
       }

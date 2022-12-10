@@ -1,18 +1,12 @@
-async function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-  
+import { collection, getDocs, addDoc } from 'firebase/firestore/lite';
+import { getFirestore } from 'firebase/firestore/lite';
+import { firebaseApp } from './firebase';
 class ToDoListServer { 
     constructor() {
+      const fireStoreInstance = getFirestore(firebaseApp);
+      this.tasksCollection = collection(fireStoreInstance, 'tasks');
+
       this.userToCredentials = {};
-      this.userToTasks = {
-        'Mark': [
-          { title: 'Buy Milk', 'id': '1' },
-        ],
-        'Mark2': [
-          { title: 'Fix car', 'id': '2' }
-        ]
-      }
     }
   
     async getUserAuthentication(user) {
@@ -20,8 +14,6 @@ class ToDoListServer {
         throw new Error("User is undefined");
       }
 
-      sleep(2000);
-      
       function generateUserToken() {
         var result           = '';
         var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -47,33 +39,26 @@ class ToDoListServer {
     }
   
     async addUserTask(credentials, task) {
-      this._validateCredentials(credentials);
       const { userName } = credentials;
   
       console.log("Adding task " + task + " to user " + userName);
-  
-      if(this.userToTasks[userName] === undefined) {
-        this.userToTasks[userName] = [];
+      const databaseTask = { title: task, user: credentials.userName }
+
+      try {
+        const documentReference = await addDoc(this.tasksCollection, databaseTask)
+        console.log("Create task with id " + documentReference.id);
+      } catch(error) { 
+        console.error("An error has occurred in adding a task to firestore", JSON.stringify(error));
       }
-  
-      this.userToTasks[userName].push(task);
     }
   
     async getUserTasks(credentials) {
       console.log("Get user tasks");
-      this._validateCredentials(credentials);
   
-      return this.userToTasks[credentials.userName];
-    }
-  
-    _validateCredentials(credentials) {
-      const { userName, userAuth } = credentials;
-   
-      sleep(2000);
-  
-      if(this.userToCredentials[userName].userAuth !== userAuth) {
-        throw new Error("User is not authenticated");
-      }
+      const { docs } = await getDocs(this.tasksCollection);
+      const tasksList = docs.map(doc => doc.data());
+
+      return tasksList.filter(task => task.user === credentials.userName);
     }
 }
   

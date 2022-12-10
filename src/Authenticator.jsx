@@ -15,7 +15,7 @@ export function Authenticator({ redirectAddress }) {
     const {
         userName,
         onUserNameChanged
-      } = useContext(UserNameContext);    
+    } = useContext(UserNameContext);    
     
     const [userNameInputValue, setUserNameInputValue] = useState('');
     const [passwordInputValue, setPasswordInputValue] = useState('');

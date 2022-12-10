@@ -4,9 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="63dc5b31-6f8d-4ae4-ba89-ae706a4d91c1" name="Changes" comment="Fix route">
-      <change beforePath="$PROJECT_DIR$/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/useNameProvider.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/useNameProvider.js" afterDir="false" />
+    <list default="true" id="63dc5b31-6f8d-4ae4-ba89-ae706a4d91c1" name="Changes" comment="Commit cache">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/public/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Authenticator.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Authenticator.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/toDoListServer.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/toDoListServer.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

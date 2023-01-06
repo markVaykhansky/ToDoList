@@ -43,30 +43,18 @@ class ToDoListServer {
     }
   
     async addUserTask(credentials, task) {
-      this._validateCredentials(credentials);
       const { userName } = credentials;
   
       console.log("Adding task " + task + " to user " + userName);
-      debugger;
       const response = await httpClient.post('http://localhost:3000/post', { userName, task })
-      debugger;
 
       console.log("Response from server", response);
     }
   
     async getUserTasks(credentials) {
       console.log("Get user tasks");
-      this._validateCredentials(credentials);
   
       return this.userToTasks[credentials.userName];
-    }
-  
-    _validateCredentials(credentials) {
-      const { userName, userAuth } = credentials;
-   
-      if(this.userToCredentials[userName].userAuth !== userAuth) {
-        throw new Error("User is not authenticated");
-      }
     }
 }
   

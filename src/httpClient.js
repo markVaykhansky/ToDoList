@@ -17,13 +17,10 @@ class HttpClient {
     async post(url, body) {
         try {
             const payload = !!body ? JSON.stringify(body) : undefined;
-            debugger;
             const { data } = await this.axiosClient.post(url, payload);
-            debugger;
 
             return data;
         } catch(err) {
-            debugger;
             console.error("An error has occurred", err);
         }
         

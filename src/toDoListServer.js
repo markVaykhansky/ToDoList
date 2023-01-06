@@ -1,7 +1,5 @@
-async function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-  
+import { httpClient } from "./httpClient";
+
 class ToDoListServer { 
     constructor() {
       this.userToCredentials = {};
@@ -20,8 +18,6 @@ class ToDoListServer {
         throw new Error("User is undefined");
       }
 
-      sleep(2000);
-      
       function generateUserToken() {
         var result           = '';
         var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -51,12 +47,11 @@ class ToDoListServer {
       const { userName } = credentials;
   
       console.log("Adding task " + task + " to user " + userName);
-  
-      if(this.userToTasks[userName] === undefined) {
-        this.userToTasks[userName] = [];
-      }
-  
-      this.userToTasks[userName].push(task);
+      debugger;
+      const response = await httpClient.post('http://localhost:3000/post', { userName, task })
+      debugger;
+
+      console.log("Response from server", response);
     }
   
     async getUserTasks(credentials) {
@@ -69,8 +64,6 @@ class ToDoListServer {
     _validateCredentials(credentials) {
       const { userName, userAuth } = credentials;
    
-      sleep(2000);
-  
       if(this.userToCredentials[userName].userAuth !== userAuth) {
         throw new Error("User is not authenticated");
       }
